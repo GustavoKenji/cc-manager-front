@@ -65,4 +65,9 @@ export const api = {
       method: 'PATCH',
       body: JSON.stringify({ status }),
     }),
+  updateInvoiceStatus: (cardId: string, month: string, status: InstallmentStatus) =>
+    request<{ month: string; status: string }>(`/cards/${cardId}/invoices/${month}/status`, {
+      method: 'PATCH',
+      body: JSON.stringify({ status }),
+    }),
 };

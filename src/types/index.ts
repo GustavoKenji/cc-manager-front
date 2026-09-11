@@ -37,6 +37,6 @@ export interface Installment {
 export interface Invoice {
   month: string;
   total: number;
-  status: 'open' | 'closed';
+  status: 'open' | 'closed' | 'paid';
   installments: Installment[];
 }
