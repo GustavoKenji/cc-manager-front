@@ -1,4 +1,3 @@
-// src/components/AddEditCardSheet.tsx
 import { FormEvent, useState } from 'react';
 import { api } from '../lib/api';
 import { Card } from '../types';

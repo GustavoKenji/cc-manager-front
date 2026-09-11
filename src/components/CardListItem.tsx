@@ -1,4 +1,3 @@
-// src/components/CardListItem.tsx
 import { Card } from '../types';
 import { diasParaFechamento, formatarValor } from '../lib/date';
 
