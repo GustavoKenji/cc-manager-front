@@ -37,7 +37,7 @@ export const api = {
   // Cartões
   getCards: () => request<Card[]>('/cards'),
   getCard: (cardId: string) => request<Card>(`/cards/${cardId}`),
-  createCard: (data: Omit<Card, 'id' | 'availableCredit'>) =>
+  createCard: (data: Omit<Card, 'id' | 'availableCredit' | 'currentInvoiceTotal'>) =>
     request<Card>('/cards', { method: 'POST', body: JSON.stringify(data) }),
   updateCard: (cardId: string, data: Partial<Omit<Card, 'id' | 'availableCredit'>>) =>
     request<Card>(`/cards/${cardId}`, { method: 'PUT', body: JSON.stringify(data) }),
