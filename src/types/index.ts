@@ -8,6 +8,7 @@ export interface Card {
   dueDay: number;
   color: string;
   availableCredit: number;
+  currentInvoiceTotal: number;
 }
 
 export interface Purchase {
