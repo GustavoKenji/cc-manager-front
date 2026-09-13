@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import AddPurchaseSheet from '../components/AddPurchaseSheet';
 import { api } from '../lib/api';
-import { formatarValor } from '../lib/date';
+import { formatarCicloCartao, formatarValor } from '../lib/date';
 import { calcularInvoiceMonthAtual, formatarMes, shiftMonth } from '../lib/invoices';
 import { Card, Invoice } from '../types';
 
@@ -105,7 +105,8 @@ export default function CardDetail() {
                     : 'bg-line text-muted'
               }`}
             >
-              {invoice.status === 'open' ? 'Aberta' : invoice.status === 'paid' ? 'Paga' : 'Fechada'}
+              {invoice.status === 'open' ? 'Aberta · ' : invoice.status === 'paid' ? 'Paga · ' : 'Fechada · '}
+              {formatarCicloCartao(card)}
             </span>
 
             {invoice.installments.length > 0 && (
