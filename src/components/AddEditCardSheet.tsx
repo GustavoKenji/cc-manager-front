@@ -2,23 +2,23 @@ import { FormEvent, useState } from 'react';
 import { api } from '../lib/api';
 import { Card } from '../types';
 
-const CORES = ['#7F77DD', '#378ADD', '#D85A30', '#1F5C4A', '#8A5A1E', '#22261F'];
+const CORES = ['#7F77DD', '#378ADD', '#D85A30', '#1F5C4A', '#8A5A1E', '#22261F', '#DC143C', '#FFD700', '#FF69B4', '#00CED1'];
 
 export default function AddEditCardSheet({
   onClose,
   onSaved,
-  addOrEdit,
+  card,
 }: {
   onClose: () => void;
   onSaved: (card: Card) => void;
-  addOrEdit: boolean; // true for add, false for edit
+  card?: Card;
 }) {
-  const [name, setName] = useState('');
-  const [bank, setBank] = useState('');
-  const [limit, setLimit] = useState('');
-  const [closingDay, setClosingDay] = useState('');
-  const [dueDay, setDueDay] = useState('');
-  const [color, setColor] = useState(CORES[0]);
+  const [name, setName] = useState(card?.name ?? '');
+  const [bank, setBank] = useState(card?.bank ?? '');
+  const [limit, setLimit] = useState(card ? String(card.limit) : '');
+  const [closingDay, setClosingDay] = useState(card ? String(card.closingDay) : '');
+  const [dueDay, setDueDay] = useState(card ? String(card.dueDay) : '');
+  const [color, setColor] = useState(card?.color ?? CORES[0]);
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
@@ -26,17 +26,11 @@ export default function AddEditCardSheet({
     event.preventDefault();
     setError(null);
     setSubmitting(true);
+    const payload = { name, bank, limit: Number(limit), closingDay: Number(closingDay), dueDay: Number(dueDay), color };
 
     try {
-      const card = await api.createCard({
-        name,
-        bank,
-        limit: Number(limit),
-        closingDay: Number(closingDay),
-        dueDay: Number(dueDay),
-        color,
-      });
-      onSaved(card);
+      const saved = card ? await api.updateCard(card.id, payload) : await api.createCard(payload);
+      onSaved(saved);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erro ao salvar cartão');
     } finally {
@@ -52,7 +46,7 @@ export default function AddEditCardSheet({
         className="w-full max-w-sm rounded-t-2xl bg-paper p-5"
       >
         <div className="mx-auto mb-4 h-1 w-9 rounded-full bg-line" />
-        <h2 className="mb-4 text-base font-medium">{addOrEdit ? 'Novo cartão' : 'Editar cartão'}</h2>
+        <h2 className="mb-4 text-base font-medium">{card ? 'Editar cartão' : 'Novo cartão'}</h2>
 
         <label className="mb-1 block text-sm text-muted">Nome</label>
         <input

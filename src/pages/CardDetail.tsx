@@ -5,6 +5,10 @@ import { api } from '../lib/api';
 import { formatarCicloCartao, formatarValor } from '../lib/date';
 import { calcularInvoiceMonthAtual, formatarMes, shiftMonth } from '../lib/invoices';
 import { Card, Invoice } from '../types';
+import { ArrowLeft, X, Plus, ChevronRight, ChevronLeft } from 'lucide-react';
+import AddEditCardSheet from '../components/AddEditCardSheet';
+import CardOptionsMenu from '../components/CardOptionsMenu';
+import ConfirmDialog from '../components/ConfirmDialog';
 
 export default function CardDetail() {
   const { cardId } = useParams<{ cardId: string }>();
@@ -15,6 +19,9 @@ export default function CardDetail() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showAddPurchase, setShowAddPurchase] = useState(false);
+  const [showEditCard, setShowEditCard] = useState(false);
+  const [confirmDeleteCard, setConfirmDeleteCard] = useState(false);
+  const [confirmDeletePurchase, setConfirmDeletePurchase] = useState<string | null>(null);
 
   useEffect(() => {
     if (!cardId) return;
@@ -42,13 +49,6 @@ export default function CardDetail() {
     setInvoice(await api.getInvoice(cardId, month));
   }
 
-  async function handleDeletePurchase(purchaseId: string) {
-    if (!cardId) return;
-    if (!window.confirm('Remover essa compra e todas as suas parcelas?')) return;
-    await api.deletePurchase(cardId, purchaseId);
-    refetchInvoice();
-  }
-
   function handlePurchaseSaved() {
     setShowAddPurchase(false);
     refetchInvoice();
@@ -69,22 +69,41 @@ export default function CardDetail() {
     );
   }
 
+  async function handleDeleteCard() {
+    if (!card) return;
+    await api.deleteCard(card.id);
+    navigate('/');
+  }
+
+  async function confirmAndDeletePurchase() {
+    if (!cardId || !confirmDeletePurchase) return;
+    await api.deletePurchase(cardId, confirmDeletePurchase);
+    setConfirmDeletePurchase(null);
+    refetchInvoice();
+  }
+
+  function handleCardUpdated(updated: Card) {
+    setCard(updated);
+    setShowEditCard(false);
+  }
+
   return (
     <div className="relative min-h-screen p-4 pb-24">
       <div className="mb-4 flex items-center gap-3">
-        <button onClick={() => navigate('/')} aria-label="Voltar" className="text-lg">
-          ←
+        <button onClick={() => navigate('/')} aria-label="Voltar">
+          <ArrowLeft size={20} />
         </button>
         <h1 className="flex-1 truncate text-base font-medium">{card.name}</h1>
+        <CardOptionsMenu onEdit={() => setShowEditCard(true)} onDelete={() => setConfirmDeleteCard(true)} />
       </div>
 
       <div className="mb-4 flex items-center justify-between">
         <button onClick={() => setMonth(shiftMonth(month, -1))} aria-label="Mês anterior">
-          ‹
+          <ChevronLeft size={20} />
         </button>
         <p className="text-sm font-medium">{formatarMes(month)}</p>
         <button onClick={() => setMonth(shiftMonth(month, 1))} aria-label="Próximo mês">
-          ›
+          <ChevronRight size={20} />
         </button>
       </div>
 
@@ -140,11 +159,11 @@ export default function CardDetail() {
                 </div>
                 <p className="text-sm font-medium">{formatarValor(installment.amount)}</p>
                 <button
-                  onClick={() => handleDeletePurchase(installment.purchaseId)}
+                  onClick={() => setConfirmDeletePurchase(installment.purchaseId)}
                   aria-label="Remover compra"
                   className="ml-1 text-muted hover:text-danger"
                 >
-                  ×
+                  <X size={16} />
                 </button>
               </div>
             ))}
@@ -157,11 +176,34 @@ export default function CardDetail() {
         aria-label="Adicionar compra"
         className="fixed bottom-6 right-6 flex h-14 w-14 items-center justify-center rounded-full bg-primary text-2xl text-white shadow-lg hover:bg-primary-hover"
       >
-        +
+        <Plus size={24} />
       </button>
 
       {showAddPurchase && (
         <AddPurchaseSheet cardId={card.id} onClose={() => setShowAddPurchase(false)} onSaved={handlePurchaseSaved} />
+      )}
+      {showEditCard && (
+        <AddEditCardSheet card={card} onClose={() => setShowEditCard(false)} onSaved={handleCardUpdated} />
+      )}
+      {confirmDeleteCard && (
+        <ConfirmDialog
+          title="Excluir cartão"
+          message={`Isso vai apagar "${card.name}" e todas as compras e parcelas associadas a ele. Essa ação não pode ser desfeita.`}
+          confirmLabel="Excluir"
+          danger
+          onConfirm={handleDeleteCard}
+          onCancel={() => setConfirmDeleteCard(false)}
+        />
+      )}
+      {confirmDeletePurchase && (
+        <ConfirmDialog
+          title="Remover compra"
+          message="Isso vai apagar essa compra e todas as parcelas associadas a ela."
+          confirmLabel="Remover"
+          danger
+          onConfirm={confirmAndDeletePurchase}
+          onCancel={() => setConfirmDeletePurchase(null)}
+        />
       )}
     </div>
   );
