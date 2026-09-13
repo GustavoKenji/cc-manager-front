@@ -59,7 +59,7 @@ export default function Dashboard() {
         +
       </button>
 
-      {showAddCard && <AddEditCardSheet onClose={() => setShowAddCard(false)} onSaved={handleCardCreated} addOrEdit={true} />}
+      {showAddCard && <AddEditCardSheet onClose={() => setShowAddCard(false)} onSaved={handleCardCreated} />}
     </div>
   );
 }
