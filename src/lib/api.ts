@@ -1,5 +1,5 @@
 // src/lib/api.ts
-import { Card, Installment, InstallmentStatus, Invoice, Purchase } from '../types';
+import { Card, CardInput, Installment, InstallmentStatus, Invoice, Purchase } from '../types';
 import { auth } from './firebase';
 
 const API_URL = import.meta.env.VITE_API_URL;
@@ -37,9 +37,8 @@ export const api = {
   // Cartões
   getCards: () => request<Card[]>('/cards'),
   getCard: (cardId: string) => request<Card>(`/cards/${cardId}`),
-  createCard: (data: Omit<Card, 'id' | 'availableCredit' | 'currentInvoiceTotal'>) =>
-    request<Card>('/cards', { method: 'POST', body: JSON.stringify(data) }),
-  updateCard: (cardId: string, data: Partial<Omit<Card, 'id' | 'availableCredit'>>) =>
+  createCard: (data: CardInput) => request<Card>('/cards', { method: 'POST', body: JSON.stringify(data) }),
+  updateCard: (cardId: string, data: Partial<CardInput>) =>
     request<Card>(`/cards/${cardId}`, { method: 'PUT', body: JSON.stringify(data) }),
   deleteCard: (cardId: string) => request<void>(`/cards/${cardId}`, { method: 'DELETE' }),
 
