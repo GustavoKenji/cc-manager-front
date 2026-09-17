@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
-import { api } from '../lib/api';
+import { ReportItem, api } from '../lib/api';
 import { formatarValor } from '../lib/date';
-import { Card } from '../types';
 import Header from '../components/Header';
 
 function hojeISO(offsetDias = 0): string {
@@ -19,32 +18,30 @@ function formatarDataCurta(iso: string): string {
 }
 
 export default function Report() {
-  const [cards, setCards] = useState<Card[]>([]);
+  const [itens, setItens] = useState<ReportItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [from, setFrom] = useState(hojeISO());
   const [to, setTo] = useState(hojeISO(30));
 
   useEffect(() => {
+    setLoading(true);
+    setError(null);
+
     api
-      .getCards()
-      .then(setCards)
-      .catch((err) => setError(err instanceof Error ? err.message : 'Erro ao carregar cartões'))
+      .getInvoicesReport(from, to)
+      .then(setItens)
+      .catch((err) => setError(err instanceof Error ? err.message : 'Erro ao carregar relatório'))
       .finally(() => setLoading(false));
-  }, []);
+  }, [from, to]);
 
   const linhas = useMemo(() => {
-    const filtrados = cards
-      .filter((c) => c.currentInvoiceStatus !== 'paid')
-      .filter((c) => c.currentInvoiceDueDate >= from && c.currentInvoiceDueDate <= to)
-      .sort((a, b) => a.currentInvoiceDueDate.localeCompare(b.currentInvoiceDueDate));
-
     let acumulado = 0;
-    return filtrados.map((card) => {
-      acumulado += card.currentInvoiceTotal;
-      return { card, acumulado };
+    return itens.map((item) => {
+      acumulado += item.total;
+      return { item, acumulado };
     });
-  }, [cards, from, to]);
+  }, [itens]);
 
   const total = linhas.length > 0 ? linhas[linhas.length - 1].acumulado : 0;
 
@@ -88,15 +85,15 @@ export default function Report() {
           )}
 
           <div className="flex flex-col">
-            {linhas.map(({ card, acumulado }) => (
-              <div key={card.id} className="flex items-center gap-3 border-b border-line py-3">
-                <div className="h-2 w-2 flex-shrink-0 rounded-full" style={{ backgroundColor: card.color }} />
+            {linhas.map(({ item, acumulado }) => (
+              <div key={`${item.cardId}-${item.invoiceMonth}`} className="flex items-center gap-3 border-b border-line py-3">
+                <div className="h-2 w-2 flex-shrink-0 rounded-full" style={{ backgroundColor: item.cardColor }} />
                 <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm">{card.name}</p>
-                  <p className="text-xs text-muted">Vence {formatarDataCurta(card.currentInvoiceDueDate)}</p>
+                  <p className="truncate text-sm">{item.cardName}</p>
+                  <p className="text-xs text-muted">Vence {formatarDataCurta(item.dueDate)}</p>
                 </div>
                 <div className="text-right">
-                  <p className="text-sm font-medium">{formatarValor(card.currentInvoiceTotal)}</p>
+                  <p className="text-sm font-medium">{formatarValor(item.total)}</p>
                   <p className="text-xs text-muted">Acum. {formatarValor(acumulado)}</p>
                 </div>
               </div>

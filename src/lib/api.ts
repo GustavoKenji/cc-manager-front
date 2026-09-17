@@ -4,6 +4,15 @@ import { auth } from './firebase';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
+export interface ReportItem {
+  cardId: string;
+  cardName: string;
+  cardColor: string;
+  invoiceMonth: string;
+  dueDate: string;
+  total: number;
+}
+
 async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   const token = await auth.currentUser?.getIdToken();
 
@@ -69,4 +78,8 @@ export const api = {
       method: 'PATCH',
       body: JSON.stringify({ status }),
     }),
+
+  // Relatórios
+  getInvoicesReport: (from: string, to: string) =>
+    request<ReportItem[]>(`/reports/invoices?from=${from}&to=${to}`),
 };

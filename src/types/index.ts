@@ -11,6 +11,7 @@ export interface Card {
   currentInvoiceTotal: number;
   currentInvoiceStatus: 'pending' | 'paid';
   currentInvoiceDueDate: string; // "YYYY-MM-DD"
+  currentInvoiceMonth: string; // "YYYY-MM"
 }
 
 export interface Purchase {

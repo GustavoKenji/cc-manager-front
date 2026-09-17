@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import AddPurchaseSheet from '../components/AddPurchaseSheet';
 import { api } from '../lib/api';
 import { formatarCicloCartao, formatarValor } from '../lib/date';
-import { calcularInvoiceMonthAtual, formatarMes, shiftMonth } from '../lib/invoices';
+import { formatarMes, shiftMonth } from '../lib/invoices';
 import { Card, Invoice } from '../types';
 import { ArrowLeft, X, Plus, ChevronRight, ChevronLeft } from 'lucide-react';
 import AddEditCardSheet from '../components/AddEditCardSheet';
@@ -29,7 +29,7 @@ export default function CardDetail() {
       .getCard(cardId)
       .then((c) => {
         setCard(c);
-        setMonth(calcularInvoiceMonthAtual(c.closingDay));
+        setMonth(c.currentInvoiceMonth);
       })
       .catch((err) => setError(err instanceof Error ? err.message : 'Erro ao carregar cartão'));
   }, [cardId]);
