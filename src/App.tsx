@@ -4,6 +4,7 @@ import { AuthProvider } from './context/AuthContext';
 import CardDetail from './pages/CardDetail';
 import Dashboard from './pages/Dashboard';
 import Login from './pages/Login';
+import Report from './pages/Report';
 
 export default function App() {
   return (
@@ -24,6 +25,14 @@ export default function App() {
             element={
               <PrivateRoute>
                 <CardDetail />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/relatorio"
+            element={
+              <PrivateRoute>
+                <Report />
               </PrivateRoute>
             }
           />

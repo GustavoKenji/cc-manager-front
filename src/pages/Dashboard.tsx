@@ -2,12 +2,11 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AddEditCardSheet from '../components/AddEditCardSheet';
 import CardListItem from '../components/CardListItem';
-import { useAuth } from '../context/AuthContext';
 import { api } from '../lib/api';
 import { Card } from '../types';
+import Header from '../components/Header';
 
 export default function Dashboard() {
-  const { logout } = useAuth();
   const navigate = useNavigate();
   const [cards, setCards] = useState<Card[]>([]);
   const [loading, setLoading] = useState(true);
@@ -31,12 +30,7 @@ export default function Dashboard() {
 
   return (
     <div className="relative min-h-screen p-4 pb-24">
-      <div className="mb-5 flex items-center justify-between">
-        <h1 className="text-lg font-medium">Seus cartões</h1>
-        <button onClick={() => logout()} className="text-sm text-muted">
-          Sair
-        </button>
-      </div>
+      <Header />
 
       {loading && <p className="text-muted">Carregando…</p>}
       {error && <p className="text-danger">{error}</p>}

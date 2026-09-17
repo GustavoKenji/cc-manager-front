@@ -9,6 +9,8 @@ export interface Card {
   color: string;
   availableCredit: number;
   currentInvoiceTotal: number;
+  currentInvoiceStatus: 'pending' | 'paid';
+  currentInvoiceDueDate: string; // "YYYY-MM-DD"
 }
 
 export interface Purchase {
@@ -40,3 +42,5 @@ export interface Invoice {
   status: 'open' | 'closed' | 'paid';
   installments: Installment[];
 }
+
+export type CardInput = Pick<Card, 'name' | 'bank' | 'lastFourDigits' | 'limit' | 'closingDay' | 'dueDay' | 'color'>;
