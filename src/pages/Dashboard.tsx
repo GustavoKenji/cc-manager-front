@@ -13,6 +13,8 @@ export default function Dashboard() {
   const [error, setError] = useState<string | null>(null);
   const [showAddCard, setShowAddCard] = useState(false);
 
+  const cardsOrdenados = [...cards].sort((a, b) => a.closingDay - b.closingDay);
+
   useEffect(() => {
     api
       .getCards()
@@ -40,7 +42,7 @@ export default function Dashboard() {
       )}
 
       <div className="flex flex-col gap-3">
-        {cards.map((card) => (
+        {cardsOrdenados.map((card) => (
           <CardListItem key={card.id} card={card} onClick={() => navigate(`/cards/${card.id}`)} />
         ))}
       </div>

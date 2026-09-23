@@ -10,11 +10,11 @@ export default function CardListItem({ card, onClick }: { card: Card; onClick: (
       <div className="h-10 w-10 flex-shrink-0 rounded-lg" style={{ backgroundColor: card.color }} />
       <div className="min-w-0 flex-1">
         <p className="truncate text-sm font-medium">{card.name}</p>
-        <p className="mt-0.5 text-xs text-muted">{formatarCicloCartao(card)}</p>
+        <p className="mt-0.5 text-sm">{formatarCicloCartao(card)}</p>
       </div>
       <div className="flex-shrink-0 text-right">
+        <p className="mt-0.5 text-sm">Disponível: {formatarValor(card.availableCredit)}</p>
         <p className="text-sm font-medium">{formatarValor(card.currentInvoiceTotal)}</p>
-        <p className="mt-0.5 text-xs text-muted">Disponível: {formatarValor(card.availableCredit)}</p>
       </div>
     </button>
   );
