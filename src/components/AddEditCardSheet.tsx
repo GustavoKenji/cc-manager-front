@@ -2,7 +2,7 @@ import { FormEvent, useState } from 'react';
 import { api } from '../lib/api';
 import { Card } from '../types';
 
-const CORES = ['#7F77DD', '#378ADD', '#D85A30', '#1F5C4A', '#8A5A1E', '#22261F', '#DC143C', '#FFD700', '#FF69B4', '#00CED1'];
+const CORES = ['#7F77DD', '#378ADD', '#D85A30', '#1F5C4A', '#8A5A1E', '#22261F', '#DC143C', '#FFD700', '#FF69B4', '#00CED1', '#C0C0C0'];
 
 export default function AddEditCardSheet({
   onClose,

@@ -13,7 +13,7 @@ export default function Dashboard() {
   const [error, setError] = useState<string | null>(null);
   const [showAddCard, setShowAddCard] = useState(false);
 
-  const cardsOrdenados = [...cards].sort((a, b) => a.closingDay - b.closingDay);
+  const cardsOrdenados = [...cards].sort((a, b) => a.dueDay - b.dueDay);
 
   useEffect(() => {
     api
