@@ -20,7 +20,7 @@ export default function CardListItem({ card, onClick }: { card: Card; onClick: (
       </div>
       <div className="flex-shrink-0 text-right">
         <p className="mt-0.5 text-sm font-medium">Disponível: {formatarValor(card.availableCredit)}</p>
-        <p className="text-sm">{formatarValor(card.currentInvoiceTotal)}</p>
+        <p className="text-sm">Fatura atual: {formatarValor(card.currentInvoiceTotal)}</p>
       </div>
     </button>
   );

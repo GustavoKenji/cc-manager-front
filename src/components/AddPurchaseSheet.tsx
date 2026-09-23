@@ -1,5 +1,6 @@
 import { FormEvent, useState } from 'react';
 import { api } from '../lib/api';
+import CurrencyInput from './CurrencyInput';
 
 export default function AddPurchaseSheet({
   cardId,
@@ -11,7 +12,7 @@ export default function AddPurchaseSheet({
   onSaved: () => void;
 }) {
   const [description, setDescription] = useState('');
-  const [totalAmount, setTotalAmount] = useState('');
+  const [totalAmount, setTotalAmount] = useState(0);
   const [purchaseDate, setPurchaseDate] = useState(() => new Date().toISOString().slice(0, 10));
   const [category, setCategory] = useState('');
   const [installmentsCount, setInstallmentsCount] = useState('1');
@@ -26,7 +27,7 @@ export default function AddPurchaseSheet({
     try {
       await api.createPurchase(cardId, {
         description,
-        totalAmount: Number(totalAmount),
+        totalAmount,
         purchaseDate,
         category: category || undefined,
         installmentsCount: Number(installmentsCount) || 1,
@@ -61,14 +62,10 @@ export default function AddPurchaseSheet({
         <div className="mb-3 flex gap-3">
           <div className="flex-1">
             <label className="mb-1 block text-sm text-muted">Valor total</label>
-            <input
+            <CurrencyInput
               required
-              type="number"
-              step="0.01"
-              min="0"
               value={totalAmount}
-              onChange={(e) => setTotalAmount(e.target.value)}
-              placeholder="0,00"
+              onChange={setTotalAmount}
               className="w-full rounded border border-line bg-surface px-3 py-2 outline-none focus:border-primary"
             />
           </div>

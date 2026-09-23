@@ -1,6 +1,7 @@
 import { FormEvent, useState } from 'react';
 import { api } from '../lib/api';
 import { Card } from '../types';
+import CurrencyInput from './CurrencyInput';
 
 const CORES = ['#7F77DD', '#378ADD', '#D85A30', '#1F5C4A', '#8A5A1E', '#22261F', '#DC143C', '#FFD700', '#FF69B4', '#00CED1', '#C0C0C0'];
 
@@ -15,7 +16,7 @@ export default function AddEditCardSheet({
 }) {
   const [name, setName] = useState(card?.name ?? '');
   const [bank, setBank] = useState(card?.bank ?? '');
-  const [limit, setLimit] = useState(card ? String(card.limit) : '');
+  const [limit, setLimit] = useState(card?.limit ?? 0);
   const [closingDay, setClosingDay] = useState(card ? String(card.closingDay) : '');
   const [dueDay, setDueDay] = useState(card ? String(card.dueDay) : '');
   const [color, setColor] = useState(card?.color ?? CORES[0]);
@@ -26,7 +27,7 @@ export default function AddEditCardSheet({
     event.preventDefault();
     setError(null);
     setSubmitting(true);
-    const payload = { name, bank, limit: Number(limit), closingDay: Number(closingDay), dueDay: Number(dueDay), color };
+    const payload = { name, bank, limit, closingDay: Number(closingDay), dueDay: Number(dueDay), color };
 
     try {
       const saved = card ? await api.updateCard(card.id, payload) : await api.createCard(payload);
@@ -67,12 +68,10 @@ export default function AddEditCardSheet({
         />
 
         <label className="mb-1 block text-sm text-muted">Limite</label>
-        <input
+        <CurrencyInput
           required
-          type="number"
           value={limit}
-          onChange={(e) => setLimit(e.target.value)}
-          placeholder="5000"
+          onChange={setLimit}
           className="mb-3 w-full rounded border border-line bg-surface px-3 py-2 outline-none focus:border-primary"
         />
 
