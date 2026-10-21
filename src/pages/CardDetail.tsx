@@ -1,8 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import AddPurchaseSheet from '../components/AddPurchaseSheet';
 import { api } from '../lib/api';
-import { formatarCicloCartao, formatarValor } from '../lib/date';
+import { formatarCicloCartao, formatarDataCompra, formatarValor } from '../lib/date';
 import { formatarMes, shiftMonth } from '../lib/invoices';
 import { Card, Invoice } from '../types';
 import { ArrowLeft, X, Plus, ChevronRight, ChevronLeft } from 'lucide-react';
@@ -43,6 +43,20 @@ export default function CardDetail() {
       .catch((err) => setError(err instanceof Error ? err.message : 'Erro ao carregar fatura'))
       .finally(() => setLoading(false));
   }, [cardId, month]);
+
+  const installmentsOrdenadas = useMemo(() => {
+    if (!invoice) return [];
+
+    return [...invoice.installments].sort((a, b) => {
+      // Mesma data (ou ambas sem data): desempata pela descrição
+      if (a.purchaseDate === b.purchaseDate) return b.description.localeCompare(a.description);
+      // Parcelas sem data (compra não encontrada) vão para o fim
+      if (!a.purchaseDate) return 1;
+      if (!b.purchaseDate) return -1;
+      return b.purchaseDate.localeCompare(a.purchaseDate);
+    });
+  }, [invoice]);
+  console.log('installmentsOrdenadas:', installmentsOrdenadas);
 
   async function refetchInvoice() {
     if (!cardId || !month) return;
@@ -142,16 +156,18 @@ export default function CardDetail() {
 
           <p className="mb-2 text-xs text-muted">Compras</p>
 
-          {invoice.installments.length === 0 && (
+          {installmentsOrdenadas.length === 0 && (
             <p className="mt-6 text-center text-muted">Nenhuma compra nessa fatura.</p>
           )}
 
           <div className="flex flex-col">
-            {invoice.installments.map((installment) => (
+            {installmentsOrdenadas.map((installment) => (
               <div key={installment.id} className="flex items-center gap-3 border-b border-line py-3">
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-sm">{installment.description}</p>
                   <p className="text-xs text-muted">
+                    {formatarDataCompra(installment.purchaseDate)}
+                    {' · '}
                     {installment.totalInstallments > 1
                       ? `Parcela ${installment.number}/${installment.totalInstallments}`
                       : 'À vista'}

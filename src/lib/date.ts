@@ -14,3 +14,9 @@ export function formatarCicloCartao(card: { closingDay: number; dueDay: number }
 export function formatarValor(valor: number): string {
   return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 }
+
+export function formatarDataCompra(iso: string | null): string {
+  if (!iso) return '';
+  const [ano, mes, dia] = iso.split('-');
+  return `${dia}/${mes}/${ano}`;
+}

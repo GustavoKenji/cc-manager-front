@@ -35,6 +35,7 @@ export interface Installment {
   amount: number;
   invoiceMonth: string;
   status: InstallmentStatus;
+  purchaseDate: string | null; // "YYYY-MM-DD"
 }
 
 export interface Invoice {
